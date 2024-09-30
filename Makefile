@@ -9,4 +9,4 @@ $(TARGET): $(OBJFILES)
 	$(CC) $(CLFAGS) -o $(TARGET) $(OBJFILES) 
 	
 clean:
-	$(RM) $(OBJFILES) $(TARGET) *.preorder *.inorder *.postorder
+	$(RM) $(OBJFILES) $(TARGET) *.preorder *.inorder *.postorder temptext.txt
