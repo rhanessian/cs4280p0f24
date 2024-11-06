@@ -5,62 +5,76 @@
 #include "node.h"
 #include "tree.h"
 #include <stdio.h>
-/*
-struct node *new_node(int x) {
-  	struct node *val = (struct node *)calloc(1,sizeof(struct node));
-  	printf("Allocating memory now at %p\n", val);
-  	val->len = x;
-  	val->p_left = val->p_right = NULL;
-  	val->num = 0;
-  	return val;
+#include <ctype.h>
+
+// A function to create nodes
+struct node *newNode(char* val) {
+  	struct node *letter = (struct node *)calloc(1,sizeof(struct node));
+  	printf("Allocating memory now at %p\n", letter);
+  	letter->left = letter->right = NULL;
+  	letter->value = val;
+  	return letter;
 }
 
-int findLastDigit(char* number){
-	int digit = -1;
-	while(*number &&*number != '\n')
-	{
-		if(! isdigit(*number))
-			return -1;
-		digit = *number - '0';
-		number++;
-	}
-	return digit;
-}
 
-void insert(int key, struct node **leaf)
-{
+// A function to add a node to the tree
+void insert(char ch, struct node **leaf) {
     if( *leaf == 0 )
     {
         *leaf = (struct node*) calloc(1,  sizeof( struct node ) );
-        (*leaf)->len = key;
-        (*leaf)->p_left = 0;    
-        (*leaf)->p_right = 0;  
+        (*leaf)->alpha = ch;
+        (*leaf)->left = 0;    
+        (*leaf)->right = 0;  
     }
-    else if(key < (*leaf)->len)
+    else if(ch < (*leaf)->alpha)
     {
-        insert( key, &(*leaf)->p_left );
+        insert( ch, &(*leaf)->left );
     }
-    else if(key > (*leaf)->len)
+    else if(ch > (*leaf)->alpha)
     {
-        insert( key, &(*leaf)->p_right );
+        insert( ch, &(*leaf)->right );
     }
 }
 
-struct node* search(struct node *root, int x)
-{
-    if(root==NULL || root->len==x) {
-    	printf("found length %d at %p\n", x, root);
+// A function to search the tree for existing nodes
+struct node* search(struct node *root, char ch) {
+    if (root == NULL || root->ch == key)
+        printf("found node %c at %p\n",ch, root);
         return root;
-    } else if(x<root->len) {
-        return search(root->p_left, x);
-    } else {
-        return search(root->p_right,x);
-    }
+
+    if (root->ch < ch)
+        return search(root->right, ch);
+
+    return search(root->left, ch);
 }
 
-struct node* buildTree(char** inputArray, int length){
-	int i;
+// A main function to build tree
+struct node* buildTree(FILE *inpt, int len){
 	struct node* tree = NULL;
+	char *buf = NULL;
+	char *strbuf = NULL;
+	int i, c = 0;
+	char ch;
+	
+	buf = (char*) malloc(len);
+	fread(buf, len - 1, 1, inpt);
+	while (buf[i] != EOF) {
+		for (i = 0; i < len; i++) {
+			if (!isspace(buf[i])) {
+				strbuf[c] = buf[i];
+			} else {
+				break;
+			}
+			
+			ch = strbuf[0];
+			if(search(tree, ch) = NULL) {
+				insert(ch, &tree)
+			}
+		}
+		
+	}
+	free(buf);
+	
 	for(i = 0; i < length; i++){
 		int lastDigit = (int)findLastDigit(inputArray[i]);
 		struct node* finding = NULL;
@@ -85,17 +99,18 @@ struct node* buildTree(char** inputArray, int length){
 		}
 		printf("\n");
 	}
+	
 	return tree;
 }
 
-void printPostorder( struct node *root, int level, FILE* outfile)
-{
+// A post order print function
+void printPostorder( struct node *root, int level, FILE* outfile){
 	if( root != NULL){
 		printPostorder(root->p_left, level+1, outfile);
 		printPostorder(root->p_right, level+1, outfile);
 		fprintf(outfile, "%d\n", root->len);
 		int i;
-		for (i = 0; i < root->num; i++){
+		for (i = 0; i < root->alph; i++){
 			int j;
 			for(j=0; j<level; j++){
 				fprintf(outfile, "  ");
@@ -105,12 +120,12 @@ void printPostorder( struct node *root, int level, FILE* outfile)
 	}
 }
 
-void printPreorder(struct node *root, int level, FILE* outfile)
-{
+// A pre order print function
+void printPreorder(struct node *root, int level, FILE* outfile){
 	if( root != NULL) {
 		fprintf(outfile, "%d\n", root->len);
 		int i;
-		for (i = 0; i < root->num; i++){
+		for (i = 0; i < root->alph; i++){
 			int j;
 			for(j=0; j<level; j++){
 				fprintf(outfile, "  ");
@@ -122,13 +137,13 @@ void printPreorder(struct node *root, int level, FILE* outfile)
 	}
 }
 
-void printInorder(struct node *root, int level, FILE* outfile)
-{
+// An in order print function
+void printInorder(struct node *root, int level, FILE* outfile){
     if( root != NULL ) {
         printInorder(root->p_left, level+1, outfile);
         fprintf(outfile, "%d\n", root->len);
         int i;
-        for (i = 0; i < root->num; i++){
+        for (i = 0; i < root->alph; i++){
         	int j;
         	for(j=0; j<level; j++){
 				fprintf(outfile, "  ");

@@ -16,8 +16,10 @@ int main (int argc, const char *argv[]){
 	char *buffer = NULL;
 	bool flag = true;
 	FILE *input = tmpfile();
+	char *strings[ALPH_STRINGS];
+	int counter = 0;
 	
-	//Parse arguments and take input
+	//Parse arguments and take input; write input to temp file
 	if (argc > 2) 
     {
         printf( "usage: %s filename", argv[0] );
@@ -28,6 +30,7 @@ int main (int argc, const char *argv[]){
     	input = fopen("temptext.txt", "w+");
     	if(input == NULL) {
     		printf("Error writing to temp file.\n");
+    		fclose(input);
     		return 1;
     	}
     	
@@ -45,12 +48,14 @@ int main (int argc, const char *argv[]){
         if (file == NULL)
         {
             printf( "File could not be opened.\n" );
+            fclose(input);
             return 1;
         }
         
         input = fopen("temptext.txt", "w+");
     	if(input == NULL) {
     		printf("Error writing to temp file.\n");
+    		fclose(input);
     		return 1;
     	}
     	
@@ -67,11 +72,14 @@ int main (int argc, const char *argv[]){
     buffer = (char*) malloc(file_sz +1);
     fread(buffer, file_sz, 1, input);
     buffer[file_sz] = '\0';
+    int l = strlen(buffer);
     
-    while (a < strlen(buffer) && flag == true){
-    	if(!isalpha(buffer[a]) && !isspace(buffer[a])) {
+    while (a < l && flag == true) {
+    	if(!isalpha(buffer[a]) && !isspace(buffer[a]) && !islower(buffer[a])) {
     		flag = false;
     		printf("Input not valid. Only alpha strings accepted.\n");
+    		fclose(input);
+    		free(buffer);
     		return 1;
     	} else {
     		flag = true;
@@ -80,18 +88,27 @@ int main (int argc, const char *argv[]){
     }
     free(buffer);
     
-
-/*
-	struct node* tree = buildTree(numbers, counter);
-	FILE* pre = fopen("outP0.preorder","w");
-	FILE* inord = fopen("outP0.inorder","w");
-	FILE* post = fopen("outP0.postorder","w");
+    //Create binary search tree from input
+    struct node* tree = buildTree(input, l);
+/*    
+	//Print three traversals to out files
+	char filename[128];
+	if (argv[1]) {
+		filename[] = argv[1]
+	} else {
+		filename[] = "out";
+	}
+	FILE* pre = fopen(("%s.preorder", filename), "w");
+	FILE* inord = fopen(("%s.inorder", filename), "w");
+	FILE* post = fopen(("%s.postorder", filename), "w");
+	
 	printf("Preorder \n");
 	printPreorder(tree, 0, pre);
 	printf("Inorder \n");
 	printInorder(tree, 0, inord);
 	printf("Postorder \n");
 	printPostorder(tree, 0, post);
+	
 	fclose(pre);
 	fclose(inord);
 	fclose(post);
