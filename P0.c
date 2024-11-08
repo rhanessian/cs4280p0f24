@@ -12,12 +12,10 @@
 
 int main (int argc, const char *argv[]){
 	int a = 0, c;
-	long file_sz;
+	int file_sz;
 	char *buffer = NULL;
 	bool flag = true;
 	FILE *input = tmpfile();
-	char *strings[ALPH_STRINGS];
-	int counter = 0;
 	
 	//Parse arguments and take input; write input to temp file
 	if (argc > 2) 
@@ -69,15 +67,29 @@ int main (int argc, const char *argv[]){
     fseek(input, 0, SEEK_END);
     file_sz = ftell(input);
     rewind(input);
-    buffer = (char*) malloc(file_sz +1);
-    fread(buffer, file_sz, 1, input);
+    
+    buffer = (char*) malloc(file_sz + 1);
+    if(buffer == NULL) {
+    	perror("Failed to write file into buffer\n");
+    	fclose(input);
+    	return 1;
+    }
+    
+    size_t bytesRead = fread(buffer, sizeof(char), file_sz, input);
+    if(bytesRead != file_sz) {
+    	perror("Error reading file into buffer\n");
+    	fclose(input);
+    	free(buffer);
+    	return 1;
+    }
+    
     buffer[file_sz] = '\0';
     int l = strlen(buffer);
-    
-    while (a < l && flag == true) {
+  
+    while (a < (l-1) && flag == true) {
     	if(!isalpha(buffer[a]) && !isspace(buffer[a]) && !islower(buffer[a])) {
     		flag = false;
-    		printf("Input not valid. Only alpha strings accepted.\n");
+    		printf("Input not valid. Only lowercase alpha strings accepted.\n");
     		fclose(input);
     		free(buffer);
     		return 1;
@@ -88,19 +100,37 @@ int main (int argc, const char *argv[]){
     }
     free(buffer);
     
+    
     //Create binary search tree from input
-    struct node* tree = buildTree(input, l);
-/*    
+    struct node* tree = buildTree(input);
+    
 	//Print three traversals to out files
-	char filename[128];
+	char filename[100];
 	if (argv[1]) {
-		filename[] = argv[1]
+		strcpy(filename, argv[1]);
 	} else {
-		filename[] = "out";
+		strcpy(filename, "out");
 	}
-	FILE* pre = fopen(("%s.preorder", filename), "w");
-	FILE* inord = fopen(("%s.inorder", filename), "w");
-	FILE* post = fopen(("%s.postorder", filename), "w");
+	
+	char prefileext[] = ".preorder";
+	char infileext[] = ".inorder";
+	char postfileext[] = ".postorder";
+	
+	char prefile[100];
+	char infile[100];
+	char postfile[100];
+	
+	strcpy(prefile, filename);
+	strcpy(infile, filename);
+	strcpy(postfile, filename);
+	
+	strcat(prefile, prefileext);
+	strcat(infile, infileext);
+	strcat(postfile, postfileext);
+	
+	FILE* pre = fopen(prefile, "w");
+	FILE* inord = fopen(infile, "w");
+	FILE* post = fopen(postfile, "w");
 	
 	printf("Preorder \n");
 	printPreorder(tree, 0, pre);
@@ -112,8 +142,10 @@ int main (int argc, const char *argv[]){
 	fclose(pre);
 	fclose(inord);
 	fclose(post);
-*/
-	fclose(input);
+
+	if (input != stdin) {
+		fclose(input);
+	}
 	return 0;
 
 }

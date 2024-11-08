@@ -5,6 +5,7 @@
 
 struct node {
     char *value[ALPH_STRINGS];
+    int strn;
     char alpha;            
     struct node *left, *right;
-}
+};
