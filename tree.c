@@ -10,33 +10,14 @@
 // A function to create nodes
 struct node *newNode(char val) {
   	struct node *letter = (struct node *)calloc(1,sizeof(struct node));
-  	printf("Allocating memory now at %p\n", letter);
+  	printf("\nAllocating memory now at %p\n", letter);
   	letter->left = letter->right = NULL;
   	letter->alpha = val;
   	letter->strn = 0;
   	return letter;
 }
 
-
 // A function to add a node to the tree
-/*void insert(char ch, struct node **leaf) {
-    if( *leaf == 0 )
-    {
-        *leaf = (struct node*) calloc(1,  sizeof( struct node ) );
-        (*leaf)->alpha = ch;
-        (*leaf)->left = 0;    
-        (*leaf)->right = 0;  
-    }
-    else if(ch < (*leaf)->alpha)
-    {
-        insert( ch, &(*leaf)->left );
-    }
-    else if(ch > (*leaf)->alpha)
-    {
-        insert( ch, &(*leaf)->right );
-    }
-}
-*/
 struct node* insert(char ch, struct node* treeNode) {
 	if (treeNode == NULL){
 		return newNode(ch);
@@ -85,7 +66,9 @@ struct node* buildTree(FILE *inpt){
     	free(buf);
     }
     
-    buf[fl_sz] = '\0';
+    buf[fl_sz] = '\n';
+    buf[fl_sz + 1] = '\0';
+    printf("%s\n", buf);
     int len = strlen(buf);
     char *strbuf = NULL;
     strbuf = (char*) malloc(len);
@@ -138,7 +121,7 @@ void printPostorder( struct node *root, int level, FILE* outfile){
 		fprintf(outfile, "%*c%c:", level*2, ' ', root->alpha);
 		int i;
 		for (i = 0; i < root->strn; i++){
-			fprintf(outfile, " %s ", root->value[i]);	
+			fprintf(outfile, " %s ", root->value[i]);
 		}
 		fprintf(outfile, "\n");
 	}
