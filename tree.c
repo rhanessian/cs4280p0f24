@@ -109,7 +109,6 @@ struct node* buildTree(FILE *inpt){
 	}
 	free(buf);
 	free(strbuf);
-	fclose(inpt);
 	return tree;
 }
 
